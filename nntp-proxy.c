@@ -826,8 +826,7 @@ static void print_openssl_err(struct bufferevent *bev)
 {
     unsigned long sslerr;
     while ((sslerr = (bufferevent_get_openssl_error(bev)))) {
-    printf("Error from %s bufferevent: "
-			               "%i:%s %lu:%i:%s:%i:%s:%i:%s\n",
+    fprintf(stderr, "Error from %s bufferevent: %i:%s %lu:%i:%s:%i:%s:%i:%s\n",
 			               "xxx",
 			               errno,
 			               errno ? strerror(errno) : "-",
