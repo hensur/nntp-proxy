@@ -824,16 +824,23 @@ static void server_auth_readcb(struct bufferevent *bev, void *arg)
 
 static void print_openssl_err(struct bufferevent *bev)
 {
-    unsigned long err;
-    while ((err = (bufferevent_get_openssl_error(bev)))) {
-	const char *msg = (const char*)
-	    ERR_reason_error_string(err);
-	const char *lib = (const char*)
-	    ERR_lib_error_string(err);
-	const char *func = (const char*)
-	    ERR_func_error_string(err);
-	fprintf(stderr,
-		"%s in %s %s\n", msg, lib, func);
+    unsigned long sslerr;
+    while ((sslerr = (bufferevent_get_openssl_error(bev)))) {
+    printf("Error from %s bufferevent: "
+			               "%i:%s %lu:%i:%s:%i:%s:%i:%s\n",
+			               "xxx",
+			               errno,
+			               errno ? strerror(errno) : "-",
+			               sslerr,
+			               ERR_GET_REASON(sslerr),
+			               sslerr ?
+			               ERR_reason_error_string(sslerr) : "-",
+			               ERR_GET_LIB(sslerr),
+			               sslerr ?
+			               ERR_lib_error_string(sslerr) : "-",
+			               ERR_GET_FUNC(sslerr),
+			               sslerr ?
+			               ERR_func_error_string(sslerr) : "-");
     }
 }
 
