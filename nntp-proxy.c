@@ -316,28 +316,11 @@ static void syntax(const char *binpath)
 static SSL_CTX * ssl_server_init(const char *keypath, const char *certpath)
 {
     SSL_CTX *ctx;
-    ENGINE *e;
-
-    ENGINE_load_builtin_engines();
-    ENGINE_register_all_complete();
-
-    e = ENGINE_by_id("padlock");
-    if (e) {
-        fprintf(stderr, "[*] Using padlock engine for default ciphers\n");
-        ENGINE_set_default_ciphers(ENGINE_by_id("padlock"));
-        use_padlock_engine = 1;
-    } else {
-        fprintf(stderr, "[*] Padlock engine not available\n");
-        use_padlock_engine = 0;
-    }
-
-    SSL_load_error_strings();
-    SSL_library_init();
 
     if (!RAND_poll())
 	return NULL;
 
-    ctx = SSL_CTX_new(SSLv23_server_method());
+    ctx = SSL_CTX_new(TLS_server_method());
 
     if (!SSL_CTX_use_certificate_chain_file(ctx, certpath) ||
 	    !SSL_CTX_use_PrivateKey_file(ctx, keypath, SSL_FILETYPE_PEM)) {
@@ -349,27 +332,13 @@ static SSL_CTX * ssl_server_init(const char *keypath, const char *certpath)
 	return NULL;
     }
 
-    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
-    if (use_padlock_engine == 1) {
-	if (SSL_CTX_set_cipher_list(ctx, "AES+SHA") != 1) {
-	    fprintf(stderr, "Error setting client cipher list\n");
-	    return NULL;
-	}
-    }
     return ctx;
 }
 
 static SSL_CTX * ssl_client_init(void)
 {
-    SSL_CTX *ctx = SSL_CTX_new(SSLv23_client_method());
+    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
 
-    SSL_CTX_set_options(ctx, SSL_OP_NO_SSLv2);
-    if (use_padlock_engine == 1) {
-	if (SSL_CTX_set_cipher_list(ctx, "AES+SHA") != 1) {
-	    fprintf(stderr, "Error setting client cipher list\n");
-	    return NULL;
-	}
-    }
     return ctx;
 }
 
