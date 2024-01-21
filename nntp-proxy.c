@@ -321,6 +321,7 @@ static SSL_CTX * ssl_server_init(const char *keypath, const char *certpath)
 	return NULL;
 
     ctx = SSL_CTX_new(TLS_server_method());
+    SSL_CTX_set_max_proto_version(ctx, TLS1_2_VERSION);
 
     if (!SSL_CTX_use_certificate_chain_file(ctx, certpath) ||
 	    !SSL_CTX_use_PrivateKey_file(ctx, keypath, SSL_FILETYPE_PEM)) {
